@@ -8,7 +8,7 @@ tags: async
 
 Have you ever looked up into the stars and wondered, "How the fuck is that feature implemented"? In this series, I'll (hopefully) dive into the implementation of coroutines for several (compiled) programming languages.
 
-A short disclaimer: I'm not too sharp on the details of some (or actually any) of these implementations. Most of this will just be me rambling and looking at compiler source code/the output of [godbolt](https://godbolt.org/). I try really hard to validate every claim I'll post here, but some mistakes are sure to sneak their way into one of these. Feel free to point them up and I'll fix them as soon as I can.
+A short disclaimer: I'm not too sharp on the details of some (or actually any) of these implementations. Most of this will just be me rambling and looking at compiler source code/the output of [the Godbolt Compiler Explorer](https://godbolt.org/). I'll try to validate every claim I'll post here, but some mistakes are sure to sneak their way into one of these. Feel free to point them up and I'll fix them as soon as I can.
 
 ## Purpose
 
@@ -18,11 +18,11 @@ Afterwards, I'll give a few short examples of how to coroutines "look like" in s
 
 I hope I'll also be able to give you a rough idea of what coroutines are usful for, but it's not the main goal of this post.
 
-This is not an "asyncio" tutorial or anything like that, just me spewing nonsense and messing with some programming languages.
+This is not an "asyncio" tutorial or anything like that, just me messing with some programming languages.
 
 ## What is async?
 
-If you're like me, you probably heard terms like "async" and "coroutines" mentioned a lot, and maybe even saw (or wrote) some asynchronious code, but didn't really understand what's going on behind the scenes. Atleast I didn't (and still don't).
+If you're like me, you probably heard terms like "async" and "coroutines" mentioned a lot, and maybe even read (or wrote) some asynchronious code, but didn't really understand what's going on behind the scenes. At least I didn't (and still don't). This series of posts will try to fix that!
 
 Let's consult [Wikipedia](https://en.wikipedia.org/wiki/Coroutine)!
 
@@ -35,30 +35,31 @@ For me, a subroutine is a piece of code that accepts parameters, and "executes".
 Let's look at an example written in Zig, which shows pretty clearly what we're dealing with:
 
 ```zig
+// This prints stuff
 const warn = @import("std").debug.warn;
 
 fn foo(x: i32, y: i32) i32 {
-    warn("1) Hello there! Im taking a nap.\n", .{});
+    warn("1) [foo] Hello there! Im taking a nap.\n", .{});
     suspend;
 
-    warn("3) Why did you wake me up? Im going back to sleep.\n", .{});
+    warn("3) [foo] Why did you wake me up? Im going back to sleep.\n", .{});
     suspend;
 
-    warn("5) Fine, here you go.\n", .{});
+    warn("5) [foo] Fine, here you go.\n", .{});
     return x+y;
 }
 
-fn amain() void {
-    var frame = async foo(1, 2);
+fn async_main() void {
+    var foo_frame = async foo(1, 2);
     
-    warn("2) Wake up!\n", .{});
-    resume frame;
+    warn("2) [async_main] Wake up!\n", .{});
+    resume foo_frame;
 
-    warn("4) Grab a brush and put a little (makeup)!\n", .{});
-    resume frame;
+    warn("4) [async_main] Grab a brush and put a little (makeup)!\n", .{});
+    resume foo_frame;
 
-    var ret = await frame;
-    warn("6) foo(1,2) == {}\n", .{ret});
+    var result = await foo_frame;
+    warn("6) [async_main] foo(1,2) == {}\n", .{result});
 }
 ```
 
@@ -68,13 +69,15 @@ So the expected output is something like this:
 
 ```text
 D:\Projects\AsyncExplorer\examples> .\simple_async.exe
-1) Hello there! Im taking a nap.
-2) Wake up!
-3) Why did you wake me up? Im going back to sleep.
-4) Grab a brush and put a little (makeup)!
-5) Fine, here you go.
-6) foo(1,2) == 3
+1) [foo] Hello there! Im taking a nap.
+2) [async_main] Wake up!
+3) [foo] Why did you wake me up? Im going back to sleep.
+4) [async_main] Grab a brush and put a little (makeup)!
+5) [foo] Fine, here you go.
+6) [async_main] foo(1,2) == 3
 ```
+
+Also, it might be worth noting that this program is completely _single threaded_. There is no hidden thread creation or synchronization. Pretty cool in my opinion.
 
 Phew. That was exhausting. But I think we have a pretty solid grip on what the basics of "async" means.
 
