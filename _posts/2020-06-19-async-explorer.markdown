@@ -100,6 +100,52 @@ So now I have a solid grasp of what "async" and "coroutines" mean. But I'm still
 
 ### Zig
 
+We already saw an example of the basic usage of async in Zig, but let's take another one from the [official documentation](https://ziglang.org/documentation/0.6.0/):
+
+```zig
+const std = @import("std");
+const assert = std.debug.assert;
+
+var the_frame: anyframe = undefined;
+var final_result: i32 = 0;
+
+test "async function await" {
+    seq('a');
+    _ = async amain();
+    seq('f');
+    resume the_frame;
+    seq('i');
+    assert(final_result == 1234);
+    assert(std.mem.eql(u8, &seq_points, "abcdefghi"));
+}
+fn amain() void {
+    seq('b');
+    var f = async another();
+    seq('e');
+    final_result = await f;
+    seq('h');
+}
+fn another() i32 {
+    seq('c');
+    suspend {
+        seq('d');
+        the_frame = @frame();
+    }
+    seq('g');
+    return 1234;
+}
+
+var seq_points = [_]u8{0} ** "abcdefghi".len;
+var seq_index: usize = 0;
+
+fn seq(c: u8) void {
+    seq_points[seq_index] = c;
+    seq_index += 1;
+}
+```
+
+This example is a bit more compilicated, but try to follow the flow! We can see in the `test` section what the output sequence looks like, so it should be pretty simple following the state of the program.
+
 ### C++
 
 In C++20, there are plans to add support for _coroutines_. Let's take a look at the examples given by [cppreference](https://en.cppreference.com/w/cpp/language/coroutines):
