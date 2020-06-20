@@ -26,13 +26,13 @@ If you're like me, you probably heard terms like "async" and "coroutines" mentio
 
 Let's consult [Wikipedia](https://en.wikipedia.org/wiki/Coroutine)!
 
-> Coroutines are computer program components that generalize subroutines for non-preemptive multitasking, by allowing execution to be suspended and resumed. 
+> Coroutines are computer program components that generalize subroutines for [non-preemptive multitasking](https://en.wikipedia.org/wiki/Cooperative_multitasking), by allowing execution to be suspended and resumed. 
 
 Let's break it down a little.
 
-For me, a subroutine is a piece of code that accepts parameters, and "executes". That is, processes that parameters, produces side effects, and returns a value. Now, according to Wikipedia, a coroutine is a subroutine that can be "suspended and resumed". The way I understand that, I'm getting a picture of a subroutine "taking a nap", which we can later wake up and continue. Notice that I'm explicitly choosing to not mention multithreading or scheduling. These concepts, which can be similar (and maybe I'll explore that in a future post), are not in my scope currently.
+For me, a subroutine is a piece of code that accepts parameters, and "executes". That is, processes that parameters, produces side effects, and returns a value. Now, according to Wikipedia, a coroutine is a subroutine that can be "suspended and resumed". The way I understand that, I'm getting a picture of a subroutine "taking a nap", which we can later wake up and continue. Notice that I'm explicitly choosing to not mention [multithreading](https://en.wikipedia.org/wiki/Multithreading_(computer_architecture)) or [scheduling](https://en.wikipedia.org/wiki/Scheduling_(computing)). These concepts, which can be similar (and maybe I'll explore that in a future post), are not in my scope currently.
 
-Let's look at an example written in Zig, which shows pretty clearly what we're dealing with:
+Let's look at an example written in [Zig](https://ziglang.org/). I think the way Zig supports async is great for a first example, more so than Python or C++,  because it's very "low-level" - It shows pretty clearly what we're dealing with when we're using coroutines:
 
 ```zig
 // This prints stuff
@@ -83,6 +83,91 @@ Phew. That was exhausting. But I think we have a pretty solid grip on what the b
 
 ## Examples
 
+So now I have a solid grasp of what "async" and "coroutines" mean. But I'm still missing the "feel" for how it looks like in some other programming languages. So let's take a look!
+
+### Zig
+
+### C++
+
+In C++20, there are plans to add support for _coroutines_. Let's take a look at the examples given by [cppreference](https://en.cppreference.com/w/cpp/language/coroutines):
+
+```c++
+// uses the co_await operator to suspend execution until resumed 
+task<> tcp_echo_server() {
+  char data[1024];
+  for (;;) {
+    size_t n = co_await socket.async_read_some(buffer(data));
+    co_await async_write(socket, buffer(data, n));
+  }
+}
+
+// uses the keyword co_yield to suspend execution returning a value
+generator<int> iota(int n = 0) {
+  while(true)
+    co_yield n++;
+}
+
+// uses the keyword co_return to complete execution returning a value
+lazy<int> f() {
+  co_return 7;
+}
+```
+
+Well, this seems pretty similar to how we would use coroutines in Zig, with one added functionality: we can `co_yield` intermediate values during our execution. That wasn't in our description of coroutines earlier, but it's a feature a lot of languages and frameworks choose to support, so it's pretty interesting to see how they implement that. 
+
+Another thing to note about coroutines in C++, is that C++ supports [_exceptions_](https://en.cppreference.com/w/cpp/language/throw). It is also a thing to keep in mind while investigating coroutines. How does these two features of the language work together? What are their interactions? 
+
+Also, cppreference goes into a lot of details about the internals of the C++20 couroutines implementation, which is really interesting. When I'll be getting to trying to understand this particular implementation, that will be a great resource.
+
+### Rust
+
+Rust also allows builtin support for async programming, using the `async` and `.await` keywords. There is actually a lot going on under the hood of the Rust async implementation, but let's have a quick look. This example is taken from the [Asynchronous Programming in Rust book](https://rust-lang.github.io/async-book/01_getting_started/01_chapter.html):
+
+```rust
+async fn get_two_sites_async() {
+    // Create two different "futures" which, when run to completion,
+    // will asynchronously download the webpages.
+    let future_one = download_async("https://www.foo.com");
+    let future_two = download_async("https://www.bar.com");
+
+    // Run both futures to completion at the same time.
+    join!(future_one, future_two);
+}
+```
+
+As you can see, this looks a bit more involved than the last example I took a look at. This example downloads the contents of two web-pages in a single-threaded, asynchronous, manner.
+
+Rust's implementation of asynchronous programming relies on the [Future Trait](https://doc.rust-lang.org/beta/std/future/trait.Future.html). It's definition is a bit much for this short example, so I think I'll postpone diving into the internals of Rust async to a later post, dedicated soley for that. Actually, I really enjoyed reading into the details of this implementation and what's going on here "under the hood", and I really look forward to sticking this in a compiler and see what comes out.
+
+### LLVM IR
+
+This one is probably a bit weird, since LLVM IR is not really a "Programming Language" most people use. I won't go into the details of LLVM and it's structure (because I have no clue about that), but the important thing here is that a lot of modern languages uses LLVM for it's compilation and/or optimization. According to [the official documentation](https://llvm.org/docs/LangRef.html):
+
+> LLVM is a Static Single Assignment (SSA) based representation that provides type safety, low-level operations, flexibility, and the capability of representing ‘all’ high-level languages cleanly. It is the common code representation used throughout all phases of the LLVM compilation strategy.
+
+So yea, it's pretty cool. What's interesting for my purposes, is that LLVM [supports coroutines](https://llvm.org/docs/Coroutines.html) as a part of their IR. It's supposed to look a bit like this (don't be afraid if you don't understand everything piece of code here, neither do I):
+
+```
+define i32 @main() {
+entry:
+  %hdl = call i8* @f(i32 4)
+  call void @llvm.coro.resume(i8* %hdl)
+  call void @llvm.coro.resume(i8* %hdl)
+  call void @llvm.coro.destroy(i8* %hdl)
+  ret i32 0
+}
+```
+
+This reminds me a bit of the Zig code we started with: we call an async function, recieve a handle (or a _frame_), resume it to our heart's content, and in the end, destroy it. Seems pretty harmless.
+
+### Libraries and APIs
+
+The examples Iv'e looked into so far are _compiled languages natively supporting async programming_. That's pretty cool, but there are also a lot of frameworks and operating system APIs that allow those fun shenanigans.
+
+For example, there are [Boost.Coroutine](https://www.boost.org/doc/libs/1_57_0/libs/coroutine/doc/html/index.html) and [Boost.Coroutine2](https://www.boost.org/doc/libs/1_61_0/libs/coroutine2/doc/html/index.html) for C++'s [Boost](https://www.boost.org/), Rust's [tokio](https://docs.rs/tokio/0.2.21/tokio/), D's [Fiber](https://tour.dlang.org/tour/en/multithreading/fibers) and a lot of other [cool stuff](https://en.wikipedia.org/wiki/Coroutine#Implementations).
+
+Operating systems like Windows support cooperative multitasking API's through [Fibers](https://docs.microsoft.com/en-us/windows/win32/procthread/fibers), and Linux's [ucontext](https://www.man7.org/linux/man-pages/man2/getcontext.2.html) can be used to implement coroutines as well. Actually, some cool guy wrapped both of those up to a cross platform [C++ library](https://github.com/tonbit/coroutine). I'll maybe cover those later, as its always fun to poke into those pesky little Windows DLLs.
+
 ## Use cases
 
 Now I hope we understand the _definition_ of a coroutine, but what are the uses of these lazy little gremlins? Are they in some way _stronger_ than our classical subroutines?
@@ -98,5 +183,5 @@ Im not going to go into the use cases of coroutines too much, since it's not the
 
 ## Conclusion
 
-The point of this post was to "set the stage" for a couple of posts I'll publish here in the future. I hope I managed to give you the idea of "what" coroutines are, and maybe a touch of their use-case. In the next posts we'll be digging into some of that oh-so-sweet x86 assembly, taking a look of some the _implementations_ of coroutines provided by some compiled languages.
+The point of this post was to "set the stage" for a couple of posts I'll publish here in the future. I hope I managed to give you the idea of "what" coroutines are, and maybe a touch of their use-case. In the next posts we'll be digging into some of that oh-so-sweet [x86 assembly](https://en.wikipedia.org/wiki/X86_assembly_language), taking a look of some the _implementations_ of coroutines provided by some compiled languages.
 
