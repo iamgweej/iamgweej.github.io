@@ -38,43 +38,43 @@ Let's look at an example written in [Zig](https://ziglang.org/). I think the way
 // This prints stuff
 const warn = @import("std").debug.warn;
 
-fn foo(x: i32, y: i32) i32 {
-    warn("1) [foo] Hello there! Im taking a nap.\n", .{});
+fn print_in_parts(x: i32, y: i32) i32 {
+    warn("1) [print_in_parts] Hello there! Im taking a nap.\n", .{});
     suspend;
 
-    warn("3) [foo] Why did you wake me up? Im going back to sleep.\n", .{});
+    warn("3) [print_in_parts] Why did you wake me up? Im going back to sleep.\n", .{});
     suspend;
 
-    warn("5) [foo] Fine, here you go.\n", .{});
+    warn("5) [print_in_parts] Fine, here you go.\n", .{});
     return x+y;
 }
 
 fn async_main() void {
-    var foo_frame = async foo(1, 2);
+    var print_in_parts_frame = async print_in_parts(1, 2);
     
     warn("2) [async_main] Wake up!\n", .{});
-    resume foo_frame;
+    resume print_in_parts_frame;
 
     warn("4) [async_main] Grab a brush and put a little (makeup)!\n", .{});
-    resume foo_frame;
+    resume print_in_parts_frame;
 
-    var result = await foo_frame;
-    warn("6) [async_main] foo(1,2) == {}\n", .{result});
+    var result = await print_in_parts_frame;
+    warn("6) [async_main] print_in_parts(1,2) == {}\n", .{result});
 }
 ```
 
-Let's review the flow of this program. We call `foo()` using the `async` keyword, and at that point, `foo()` begins executing. Afterwards, using the keyword `suspend`, `foo()` forfeits it's context, which gives `amain()` an opaque `frame`, which it can use to "wake up" `foo()`. As we can see `foo()` forfeits it's context again, and finally, it returns a return value, using the `return` keyword. At that point, `amain()` retrieves that value using the `await` keyword.
+Let's review the flow of this program. We call `print_in_parts()` using the `async` keyword, and at that point, `print_in_parts()` begins executing. Afterwards, using the keyword `suspend`, `print_in_parts()` forfeits it's context, which gives `amain()` an opaque `frame`, which it can use to "wake up" `print_in_parts()`. As we can see `print_in_parts()` forfeits it's context again, and finally, it returns a return value, using the `return` keyword. At that point, `amain()` retrieves that value using the `await` keyword.
 
 So the expected output is something like this:
 
 ```text
 D:\Projects\AsyncExplorer\examples> .\simple_async.exe
-1) [foo] Hello there! Im taking a nap.
+1) [print_in_parts] Hello there! Im taking a nap.
 2) [async_main] Wake up!
-3) [foo] Why did you wake me up? Im going back to sleep.
+3) [print_in_parts] Why did you wake me up? Im going back to sleep.
 4) [async_main] Grab a brush and put a little (makeup)!
-5) [foo] Fine, here you go.
-6) [async_main] foo(1,2) == 3
+5) [print_in_parts] Fine, here you go.
+6) [async_main] print_in_parts(1,2) == 3
 ```
 
 Also, it might be worth noting that this program is completely _single threaded_. There is no hidden thread creation or synchronization. Pretty cool in my opinion.
@@ -174,7 +174,7 @@ Now I hope we understand the _definition_ of a coroutine, but what are the uses 
 
 The short answer is _No_. Coroutines (and more generally, every "code construct" of that sort) doesn't allow us to calculate _more things_. But we are developers, not computer scientists. What we care about is having extensible, modular, well designed solutions to our problems. That means, we like _modelling_ our problems in such ways that let us interact with them conviniently through code. For example through Object-Oriented design, Design Patterns, and in our cases, coroutines.
 
-Im not going to go into the use cases of coroutines too much, since it's not the point of this series. I will, though, give a quick run down of what our "break taking" functions can be usful for:
+Im not going to go into the use cases of coroutines too much, since it's not the point of this series. I will, though, give a quick run down of what our "break taking" functions can be useful for:
 
 * Modelling [Generators](https://en.wikipedia.org/wiki/Generator_(computer_programming)).
 * Implementing [Cooperative Multitasking](https://en.wikipedia.org/wiki/Cooperative_multitasking).
