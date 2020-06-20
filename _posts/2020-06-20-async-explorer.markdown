@@ -16,7 +16,7 @@ The purpose of this post is to set a few definitions for my upcoming posts. I'll
 
 Afterwards, I'll give a few short examples of how to coroutines "look like" in several programming languages, like C++, Rust, Zig and the LLVM IR. 
 
-I hope I'll also be able to give you a rough idea of what coroutines are usful for, but it's not the main goal of this post.
+I hope I'll also be able to give you a rough idea of what coroutines are useful for, but it's not the main goal of this post.
 
 This is not an "asyncio" tutorial or anything like that, just me messing with some programming languages.
 
@@ -200,11 +200,11 @@ Rust's implementation of asynchronous programming relies on the [Future Trait](h
 
 ### LLVM IR
 
-This one is probably a bit weird, since LLVM IR is not really a "Programming Language" most people use. I won't go into the details of LLVM and it's structure (because I have no clue about that), but the important thing here is that a lot of modern languages uses LLVM for it's compilation and/or optimization. According to [the official documentation](https://llvm.org/docs/LangRef.html):
+This one is probably a bit weird, since [LLVM](https://llvm.org/) IR is not really a "Programming Language" most people use. I won't go into the details of LLVM and it's structure (because I have no clue about that), but the important thing here is that a lot of modern languages uses LLVM for it's compilation and/or optimization. According to [the official documentation](https://llvm.org/docs/LangRef.html):
 
 > LLVM is a Static Single Assignment (SSA) based representation that provides type safety, low-level operations, flexibility, and the capability of representing ‘all’ high-level languages cleanly. It is the common code representation used throughout all phases of the LLVM compilation strategy.
 
-So yea, it's pretty cool. What's interesting for my purposes, is that LLVM [supports coroutines](https://llvm.org/docs/Coroutines.html) as a part of their IR. It's supposed to look a bit like this (don't be afraid if you don't understand everything piece of code here, neither do I):
+So yea, it's pretty cool. What's interesting for my purposes, is that LLVM [supports coroutines](https://llvm.org/docs/Coroutines.html) as a part of their IR. It's supposed to look a bit like this (don't be afraid if you don't understand every piece of code here, neither do I):
 
 ```
 define i32 @main() {
