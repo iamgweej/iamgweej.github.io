@@ -81,6 +81,19 @@ Also, it might be worth noting that this program is completely _single threaded_
 
 Phew. That was exhausting. But I think we have a pretty solid grip on what the basics of "async" means.
 
+## Use cases
+
+Now I hope we understand the _definition_ of a coroutine, but what are the uses of these lazy little gremlins? Are they in some way _stronger_ than our classical subroutines?
+
+The short answer is _No_. Coroutines (and more generally, every "code construct" of that sort) doesn't allow us to calculate _more things_. But we are developers, not computer scientists. What we care about is having extensible, modular, well designed solutions to our problems. That means, we like _modelling_ our problems in such ways that let us interact with them conviniently through code. For example through Object-Oriented design, Design Patterns, and in our cases, coroutines.
+
+Im not going to go into the use cases of coroutines too much, since it's not the point of this series. I will, though, give a quick run down of what our "break taking" functions can be useful for:
+
+* Modelling [Generators](https://en.wikipedia.org/wiki/Generator_(computer_programming)).
+* Implementing [Cooperative Multitasking](https://en.wikipedia.org/wiki/Cooperative_multitasking).
+* Using [Asynchronous IO](https://en.wikipedia.org/wiki/Asynchronous_I/O).
+* A lot of other cool stuff.
+
 ## Examples
 
 So now I have a solid grasp of what "async" and "coroutines" mean. But I'm still missing the "feel" for how it looks like in some other programming languages. So let's take a look!
@@ -167,19 +180,6 @@ The examples Iv'e looked into so far are _compiled languages natively supporting
 For example, there are [Boost.Coroutine](https://www.boost.org/doc/libs/1_57_0/libs/coroutine/doc/html/index.html) and [Boost.Coroutine2](https://www.boost.org/doc/libs/1_61_0/libs/coroutine2/doc/html/index.html) for C++'s [Boost](https://www.boost.org/), Rust's [tokio](https://docs.rs/tokio/0.2.21/tokio/), D's [Fiber](https://tour.dlang.org/tour/en/multithreading/fibers) and a lot of other [cool stuff](https://en.wikipedia.org/wiki/Coroutine#Implementations).
 
 Operating systems like Windows support cooperative multitasking API's through [Fibers](https://docs.microsoft.com/en-us/windows/win32/procthread/fibers), and Linux's [ucontext](https://www.man7.org/linux/man-pages/man2/getcontext.2.html) can be used to implement coroutines as well. Actually, some cool guy wrapped both of those up to a cross platform [C++ library](https://github.com/tonbit/coroutine). I'll maybe cover those later, as its always fun to poke into those pesky little Windows DLLs.
-
-## Use cases
-
-Now I hope we understand the _definition_ of a coroutine, but what are the uses of these lazy little gremlins? Are they in some way _stronger_ than our classical subroutines?
-
-The short answer is _No_. Coroutines (and more generally, every "code construct" of that sort) doesn't allow us to calculate _more things_. But we are developers, not computer scientists. What we care about is having extensible, modular, well designed solutions to our problems. That means, we like _modelling_ our problems in such ways that let us interact with them conviniently through code. For example through Object-Oriented design, Design Patterns, and in our cases, coroutines.
-
-Im not going to go into the use cases of coroutines too much, since it's not the point of this series. I will, though, give a quick run down of what our "break taking" functions can be useful for:
-
-* Modelling [Generators](https://en.wikipedia.org/wiki/Generator_(computer_programming)).
-* Implementing [Cooperative Multitasking](https://en.wikipedia.org/wiki/Cooperative_multitasking).
-* Using [Asynchronous IO](https://en.wikipedia.org/wiki/Asynchronous_I/O).
-* A lot of other cool stuff.
 
 ## Conclusion
 
