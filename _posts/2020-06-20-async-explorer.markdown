@@ -200,7 +200,7 @@ Rust's implementation of asynchronous programming relies on the [Future Trait](h
 
 ### LLVM IR
 
-This one is probably a bit weird, since [LLVM](https://llvm.org/) IR is not really a "Programming Language" most people use. I won't go into the details of LLVM and it's structure (because I have no clue about that), but the important thing here is that a lot of modern languages uses LLVM for it's compilation and/or optimization. According to [the official documentation](https://llvm.org/docs/LangRef.html):
+This one is probably a bit weird, since [LLVM](https://llvm.org/) IR is not really a "Programming Language" most people use. I won't go into the details of LLVM and its structure (because I have no clue about that), but the important thing here is that a lot of modern languages uses LLVM for its compilation and/or optimization. According to [the official documentation](https://llvm.org/docs/LangRef.html):
 
 > LLVM is a Static Single Assignment (SSA) based representation that provides type safety, low-level operations, flexibility, and the capability of representing ‘all’ high-level languages cleanly. It is the common code representation used throughout all phases of the LLVM compilation strategy.
 
@@ -221,7 +221,7 @@ This reminds me a bit of the Zig code we started with: we call an async function
 
 ### Libraries and APIs
 
-The examples Iv'e looked into so far are _compiled languages natively supporting async programming_. That's pretty cool, but there are also a lot of frameworks and operating system APIs that allow those fun shenanigans.
+The examples I've looked into so far are _compiled languages natively supporting async programming_. That's pretty cool, but there are also a lot of frameworks and operating system APIs that allow those fun shenanigans.
 
 For example, there are [Boost.Coroutine](https://www.boost.org/doc/libs/1_57_0/libs/coroutine/doc/html/index.html) and [Boost.Coroutine2](https://www.boost.org/doc/libs/1_61_0/libs/coroutine2/doc/html/index.html) for C++'s [Boost](https://www.boost.org/), Rust's [tokio](https://docs.rs/tokio/0.2.21/tokio/), D's [Fiber](https://tour.dlang.org/tour/en/multithreading/fibers) and a lot of other [cool stuff](https://en.wikipedia.org/wiki/Coroutine#Implementations).
 
