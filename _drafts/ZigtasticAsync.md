@@ -227,7 +227,7 @@ Now, we clean up the stack frame and `ret`. This is important: A `suspend` trans
 
 Let's check out the other branch:
 
-```
+```assembly
 .LBB2_8:
         mov     rax, qword ptr [rbp - 24]
         sub     rax, 1
@@ -237,7 +237,7 @@ Let's check out the other branch:
 
 Hmm. It checks that `stored_branch_id` is not 1. Our standing assumption that `frame.branch_id == 1`  is flag, implying that _another thread is running this frame currently_. Indeed, if we follow the case `stored_branch_id == 1` we arrive at:
 
-```
+```assembly
 .LBB2_3:
         xor     eax, eax
         mov     esi, eax
@@ -352,7 +352,7 @@ If it is, we just return, nothing special:
 
 Now here's the weird part. If `original_u3` _isn't_ 0, we clear the stack frame and perform an _absolute jump_ to the address stored in `original_u3`:
 
-```
+```assembly
 .LBB2_7:
         mov     rax, qword ptr [rbp - 32]
         mov     rcx, qword ptr [rbp - 32]
