@@ -385,6 +385,6 @@ We also have a few questions that arose during our research:
 * What happens when multiple threads try to `resume` the same frame?
 * What is the absolute jump to `*unknown3` used for?
 
-Those are some pretty tough questions, we'll try to tackle them one by one. The next features we're going to take a look at is adding _arguments_  and _local variables_ to our coroutine.
+Those are some pretty tough questions, we'll try to tackle them one by one. The next features we're going to take a look at is understanding what happens when we `resume` a frame, and the we'll start adding _arguments_  and _local variables_ to our coroutine.
 
 That was exhausting, but if you reached this far, good job! I hope youv'e learnt something new (I sure did).
