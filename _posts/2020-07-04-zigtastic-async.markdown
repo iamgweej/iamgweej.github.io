@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Zigtastic Async"
-date:   2020-07-04 22:00:00 +0300
+date:   2020-07-07 7:00:00 +0300
 categories: jekyll update
 tags: zig async
 ---
