@@ -16,5 +16,5 @@ In this blog you will probably find:
 * Functional programming galore.
 * Mathematics nonsense.
 * Hand to hand combat with compilers and interpreters.
-* General knowledge about marine mammels.
+* General knowledge about marine mammals.
 
