@@ -14,4 +14,4 @@ Secondly, doing this mini-project made me appreciate Zig's simplicity a lot. I r
 
 It's a pretty short post, so I think ill just add an image I generated, and [link](https://github.com/iamgweej/zigrtrc) to to projects github:
 
-![](../_images/ZigRayTracingInAWeekend.png)
+[![](../_images/ZigRayTracingInAWeekend.png)](https://raw.githubusercontent.com/iamgweej/iamgweej.github.io/master/_images/ZigRayTracingInAWeekend.png)
